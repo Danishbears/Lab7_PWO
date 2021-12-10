@@ -1,0 +1,53 @@
+version: '3'
+ 
+services:
+    db:
+      image: mysql:5.7
+      container_name: Cloud202191299
+      environment:
+        MYSQL_ROOT_PASSWORD: aaaaaa
+        MYSQL_DATABASE: bookAPI
+        MYSQL_USER: DB
+        MYSQL_PASSWORD: aaaaaa
+      ports:
+        - 3306:3306
+      networks:
+        back:
+          ipv4_address: 10.0.10.3
+    phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      container_name: phpmyadmin
+      links:
+        - db
+      environment:
+        PMA_HOST: db
+        PMA_PORT: 3306
+        PMA_ARBITRARY: 1
+      restart: always
+      ports:
+        - 8080:80
+      networks:
+        back:
+          ipv4_address: 10.0.10.6
+    java:
+      container_name: bookAPI
+      build:
+        context: .
+        dockerfile: Dockerfile
+      volumes:
+      - ./:/app
+      stdin_open: true
+      tty: true
+      links:
+        - db
+      ports:
+        - 8081:8080
+      networks:
+        back:
+networks:
+  back:
+    ipam:
+      config:
+        - subnet: 10.0.10.0/24
+
+
